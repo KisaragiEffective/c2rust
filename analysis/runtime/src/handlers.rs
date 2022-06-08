@@ -48,6 +48,12 @@ pub fn reallocarray(mir_loc: MirLocId, old_ptr: usize, nmemb: u64, size: u64, ne
     }).unwrap();
 }
 
+pub fn offset(mir_loc: MirLocId, ptr: usize, offset: isize, new_ptr: usize) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::Offset(ptr, offset, new_ptr),
+    }).unwrap();
+}
 
 pub fn ptr_field(mir_loc: MirLocId, ptr: usize, field_id: u32) {
     TX.send(Event {
@@ -59,7 +65,42 @@ pub fn ptr_field(mir_loc: MirLocId, ptr: usize, field_id: u32) {
 pub fn ptr_copy(mir_loc: MirLocId, ptr: usize) {
     TX.send(Event {
         mir_loc,
-        kind: EventKind::Copy(ptr),
+        kind: EventKind::CopyPtr(ptr as usize),
+    }).unwrap();
+}
+
+pub fn ptr_move(mir_loc: MirLocId, ptr: usize) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::MovePtr(ptr as usize),
+    }).unwrap();
+}
+
+pub fn ptr_contrive(mir_loc: MirLocId, ptr: usize) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::FromInt(ptr as usize),
+    }).unwrap();
+}
+
+pub fn ptr_to_int(mir_loc: MirLocId, ptr: usize) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::ToInt(ptr as usize),
+    }).unwrap();
+}
+
+pub fn addr_of_local(mir_loc: MirLocId, ptr: usize, local: u32) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::AddrOfLocal(ptr, local as usize),
+    }).unwrap();
+}
+
+pub fn ref_copy(mir_loc: MirLocId, _dest_local_ptr: usize) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::CopyRef,
     }).unwrap();
 }
 
@@ -67,6 +108,20 @@ pub fn ptr_arg(mir_loc: MirLocId, ptr: usize) {
     TX.send(Event {
         mir_loc,
         kind: EventKind::Arg(ptr),
+    }).unwrap();
+}
+
+pub fn load_value(mir_loc: MirLocId, ptr: usize) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::LoadValue(ptr),
+    }).unwrap();
+}
+
+pub fn store_value(mir_loc: MirLocId, ptr: usize) {
+    TX.send(Event {
+        mir_loc,
+        kind: EventKind::StoreValue(ptr),
     }).unwrap();
 }
 
